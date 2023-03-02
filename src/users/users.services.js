@@ -1,166 +1,94 @@
-const usersControllers = require('./users.controllers')
-const responses = require('../utils/responses.handler')
+const userControllers = require('./users.controllers')
 
 const getAllUsers = (req, res) => {
-    usersControllers.findAllUser()
-        .then(data => {
-            responses.success({
-                    status: 200,
-                    data: data,
-                    message: 'Getting all Users',
-                    res
-                })
+
+    userControllers.findAllUsers()
+        .then((data) => {
+            res.status(200).json(data)
         })
-        .catch(err => {
-            responses.error({
-                    status: 400,
-                    data: err,
-                    message: 'Something bad getting all users',
-                    res
-                })
+        .catch((err) => {
+            res.status(400).json({message: err.message})
         })
 }
 
-const getUserById = (req ,res) => {
-    const id = req.params.id 
-    usersControllers.findUserById(id)
-        .then(data => {
+const getUserById = (req, res) => {
+    const id = req.params.id
+    userControllers.findUserById(id)
+        .then((data) => {
             if(data){
-                responses.success({
-                    status: 200,
-                    data,
-                    message: `Getting User with id: ${id}`,
-                    res
-                })
+                res.status(200).json(data)
             } else {
-                responses.error({
-                    status: 404,
-                    message: `User with ID: ${id}, not found`,
-                    res
-                })
+                res.status(404).json({message: 'Invalid ID'})
             }
         })
-        .catch(err => {
-            responses.error({
-                status: 400,
-                data: err,
-                message: 'Something bad getting the user',
-                res
-            })
+        .catch((err) => {
+            res.status(400).json({message: err.message})
         })
 }
 
-const postNewUser = (req, res) => {
-    const userObj = req.body
-    usersControllers.createNewUser(userObj)
-        .then(data => {
-            responses.success({
-                status: 201,
-                data,
-                message: `User created succesfully with id: ${data.id}`,
-                res
-            })
+const postUser = (req, res) => {
+
+    const {first_name, last_name, user_name, email, password, age, country} = req.body
+
+    userControllers.createUser({first_name, last_name, user_name, email, password, age, country})
+        .then((data) => {
+            res.status(201).json(data)
         })
-        .catch(err => {
-            responses.error({
-                status: 400,
-                data: err,
-                message: 'Error ocurred trying to create a new user',
-                res,
+        .catch((err) => {
+            res.status(400).json({
+                message: err.message, 
                 fields: {
-                    firstName : 'String',
-                    lastName : 'String',
-                    email: 'example@example.com',
-                    password: 'String',
-                    profileImage: 'example.com/image.png',
-                    phone : '+52 1234 123 123'
-                }
-            })
+                    first_name: 'string',
+                    last_name: 'string',
+                    user_name: 'string',
+                    email: 'string',
+                    password: 'string',
+                    age: 'number',
+                    country: 'MXN'
+                }})
         })
 }
 
 const patchUser = (req, res) => {
     const id = req.params.id 
-    const userObj = req.body 
+    const {first_name, last_name, user_name, age, country} = req.body
 
-    usersControllers.updateUser(id, userObj)
-        .then(data => {
+    userControllers.updateUser(id, {first_name, last_name, user_name, age, country})
+        .then((data) => {
             if(data){
-                responses.success({
-                    status: 200,
-                    data, 
-                    message: `User with id: ${id} modified successfully`,
-                    res
-                })
+                res.status(200).json({message: 'User Modified Succesfully'})
             } else {
-                responses.error({
-                    status: 404,
-                    message: `The user with ID ${id} not found`,
-                    res,
-                    fields: {
-                        firstName : 'String',
-                        lastName : 'String',
-                        email: 'example@example.com',
-                        password: 'String',
-                        profileImage: 'example.com/image.png',
-                        phone : '+52 1234 123 123'
-                    }
-                })
+                res.status(404).json({message: 'Invalid ID'})
             }
         })
-        .catch(err => {
-            responses.error({
-                status: 400,
-                data: err,
-                message: `Error ocurred trying to update user with id ${id}`,
-                res,
-                fields: {
-                    firstName : 'String',
-                    lastName : 'String',
-                    email: 'example@example.com',
-                    password: 'String',
-                    profileImage: 'example.com/image.png',
-                    phone : '+52 1234 123 123'
-                }
-            })
+        .catch((err) => {
+            res.status(400).json({message: err.message})
         })
 }
 
 const deleteUser = (req, res) => {
-    const id = req.params.id 
+    const id = req.params.id;
 
-    usersControllers.deleteUser(id)
-        .then(data => {
+    userControllers.deleteUser(id)
+        .then((data) => {
             if(data){
-                responses.success({
-                    status: 200,
-                    data, 
-                    message: `User with id: ${id} deleted successfully`,
-                    res
-                })
+                res.status(200).json({message: 'User Deleted Succesfully'})
             } else {
-                responses.error({
-                    status: 404,
-                    data: err,
-                    message: `The user with ID ${id} not found`,
-                    res
-                })
+                res.status(404).json({message: 'Invalid ID'})
             }
         })
-        .catch(err => {
-            responses.error({
-                status: 400,
-                data: err,
-                message: `Error ocurred trying to delete user with id ${id}`,
-                res
-            })
+        .catch((err) => {
+            res.status(400).json({message: err.message})
         })
 }
 
 module.exports = {
     getAllUsers,
     getUserById,
-    postNewUser,
+    postUser,
     patchUser,
     deleteUser
 }
+
+
+

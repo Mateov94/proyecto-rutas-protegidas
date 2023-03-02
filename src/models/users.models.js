@@ -7,63 +7,42 @@ const Users = db.define('users', {
         type: DataTypes.UUID,
         primaryKey: true
     },
-    firstName: {
+    first_name: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-            notEmpty: {
-                msg: 'firstName: required file'
-            },
-            len: [1, 255]
-        }
+        allowNull: false
     },
-    lastName: {
+    last_name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    user_name: {
         type: DataTypes.STRING,
         allowNull: false,
-        validate: {
-            notEmpty: {
-                msg: 'lastName: required file'
-            },
-            len: [1, 255]
-        }
+        unique: true
     },
     email: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
         validate: {
-            notEmpty: {
-                msg: 'email: required file'
-            },
-            len: [1, 255],
-            isEmail: true
+            isEmail: true,
         }
     },
     password: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-            notEmpty: {
-                msg: 'password: required file'
-            },
-            len: [1, 255]
-        }
+        allowNull: false
     },
-    profileImage:{
+    age: {
+        type: DataTypes.INTEGER
+    },
+    role: {
         type: DataTypes.STRING,
-        validate: {
-            isUrl: true
-        }
+        defaultValue: 'normal'
     },
-    phone: {
-        type: DataTypes.STRING,
-    },
-    isActive: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: true,
+    country: {
+        type: DataTypes.STRING(3)
     }
 })
 
-  
 
 module.exports = Users

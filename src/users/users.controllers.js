@@ -1,8 +1,8 @@
-const uuid = require('uuid')
-
 const Users = require('../models/users.models')
+const uuid = require('uuid')
+const { hashPassword } = require('../utils/crypto')
 
-const findAllUser = async () => {
+const findAllUsers = async () => {
     const data = await Users.findAll()
     return data
 }
@@ -16,37 +16,27 @@ const findUserById = async (id) => {
     return data
 }
 
-const findUserByEmail = async (email) => {
-    const data = await Users.findOne({
-        where: {
-            email: email
-        }
+const createUser = async (obj) => {
+    const data = await Users.create({
+        id: uuid.v4(),
+        first_name: obj.first_name,
+        last_name: obj.last_name,
+        user_name: obj.user_name,
+        email: obj.email,
+        password: hashPassword(obj.password),
+        age: obj.age,
+        country: obj.country
     })
     return data
 }
 
-const createNewUser = async (userObj) => {
-    const newUser = {
-        id: uuid.v4(),
-        firstName : userObj.firstName,
-        lastName : userObj.lastName,
-        email: userObj.email,
-        password: userObj.password,
-        profileImage: userObj.profileImage,
-        phone : userObj.phone
-    }
-    const data = await Users.create(newUser)
-    return data
-}
-
-const updateUser = async (id, userObj) => {
-    //data === 1
-    const data = await Users.update(userObj,{
+const updateUser = async (id, obj) => {
+    const data = await Users.update(obj, {
         where: {
             id: id
         }
     })
-    return data[0]
+    return data[0] //? Retorna un arreglo, este arreglo puede lucir de estas 2 maneras [1], [0]
 }
 
 const deleteUser = async (id) => {
@@ -55,14 +45,23 @@ const deleteUser = async (id) => {
             id: id
         }
     })
+    return data //? Retorna 1 en caso de que se haya eliminado, o 0 en caso de que el id no exista
+}
+
+const getUserByEmail = async (email) => {
+    const data = await Users.findOne({
+        where: {
+            email: email
+        }
+    })
     return data
 }
 
 module.exports = {
-    findAllUser,
+    findAllUsers,
     findUserById,
-    findUserByEmail,
-    createNewUser,
+    createUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    getUserByEmail
 }
